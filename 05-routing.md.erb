@@ -55,11 +55,11 @@ Até agora, nós construímos o nosso layout utilizando inclusões de templates 
 
 O Iron Router permite-nos outra abordagem ao ficar responsável pelo que é renderizado dentro da tag HTML `<body>`. Ou seja, nós não precisamos de definir o conteúdo dessa tag por nós próprios, como faríamos numa página HTML normal. Em vez disso, vamos apontar o roteador para um template layout especial que contem um ajudante de template `{{yield}}`.
 
-O ajudante `{{yield}}` vai definir uma zona dinâmica especial que vai automaticamente renderizar o template correspondente à rota atual (como convenção, vamos designar, a partir de agora, este template especial como o "template da rota"):
+O ajudante `{{> yield}}` vai definir uma zona dinâmica especial que vai automaticamente renderizar o template correspondente à rota atual (como convenção, vamos designar, a partir de agora, este template especial como o "template da rota"):
 
 <%= diagram "router-diagram", "Layouts e templates.", "pull-center" %>
 
-Vamos começar por criar o nosso layout e adicionar o ajudante `{{yield}}`. Primeiro, vamos remover a nossa tag HTML `<body>` do `main.html`, e mover o seu conteúdo para o seu próprio template, `layout.html`.
+Vamos começar por criar o nosso layout e adicionar o ajudante `{{> yield}}`. Primeiro, vamos remover a nossa tag HTML `<body>` do `main.html`, e mover o seu conteúdo para o seu próprio template, `layout.html`.
 
 O nosso, agora mais magro, `main.html` deve ser agora algo como:
 
@@ -81,7 +81,7 @@ Enquanto que o recém criado `layout.html` vai agora conter o layout mais exteri
     </div>
   </header>
   <div id="main" class="row-fluid">
-    {{yield}}
+    {{> yield}}
   </div>
   </div>
 </template>
