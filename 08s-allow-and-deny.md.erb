@@ -24,27 +24,29 @@ Similarmente, podemos definir um ou mais callbacks `deny`. Se _qualquer_ destes 
 
 <%= diagram "allow_deny", "Note: n/e stands for Not Executed" %>
 
-////
+Em outras palavras, Meteor recorre a lista de callbacks começando pelos `deny`, e em seguida por todos os `allow` até que algum retorne `true`.
 
-////
+Um exemplo prático deste padrão poderia ser, por exemplo, ter dois callbacks `allow()`, um verifica se um post pertence ao usuário atual, e o outro se o usuário atual é um administrador. Se você for um administrador, garante que o usuário será capaz de atualizar qualquer post, então pelo menos um dos callbacks retornará `true`.
 
-### Latency Compensation
+### Compensação da Latência
 
-////
+Lembre-se que os métodos que fazem mudanças no banco de dados (como `.update ()`) compensam a latência, como qualquer outro método. Por exemplo, se no console do navegador, você tentar remover um post que não é seu, você verá que, por um momento, o posto desaparece porque a coleção local perdeu o documento, mas depois reaparece quando o servidor diz-nos que, não, o documento não foi removido.
 
-////
+É claro que este comportamento não é um problema quando ativado a partir do console (afinal de contas, se o usuário brincar com os dados pelo console, não é nosso problema o que acontece em seus navegadores). No entanto, você precisa ter certeza de que isso não aconteça a partir da interface do usuário. Por exemplo, você precisa ter o cuidado de garantir que os usuários não vejam botões para excluir os documentos que não estão autorizados a excluir.
 
-////
 
-### Server-side permissions
+Felizmente, não muito frequentemente usaremos código extra que define as permissões, compartilhada entre o cliente eo servidor (por exemplo, você poderia escrever uma função `canDeletePost(user, post)` e colocá-la no diretório `/lib`).
 
-////
+### As permissões no lado do servidor
 
-////
 
-### Using deny as a callback
+Lembre-se que o sistema de autorização aplica-se apenas a mudanças na base de dados iniciadas no lado do cliente. No servidor, Meteor assume que todas as operações são permitidas.
 
-////
+Isto significa que, se você escrever um método `deletePost` no lado do servidor, o que pode ser chamado a partir do cliente, todos podem excluir qualquer post. Provavelmente não quer fazer isso, a menos que você verifique as permissões do usuário dentro desse método.
+
+### Use deny como um callback
+
+Finalmente, um truque que se pode fazer com `deny` é usá-lo como um callback "OnX". Por exemplo, poderíamos obter um timestamp `lastModified` com o seguinte código:
 
 ~~~js
 Posts.deny({
@@ -56,6 +58,6 @@ Posts.deny({
 });
 ~~~
 
-////
+Como os callbacks `deny` se executam a cada atualização realizada com êxito, sabemos que será executado e, desta forma, podemos fazer alterações no documento de forma estruturada.
 
-////
+É verdade que esta técnica é um pouco duvidosa, então você pode preferir fazer atualizações usando um método. No entanto, é útil saber, e no futuro, nós esperamos ter disponível alguns callbacks do tipo `beforeUpdate`.
